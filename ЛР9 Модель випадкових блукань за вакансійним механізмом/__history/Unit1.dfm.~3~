@@ -1,0 +1,116 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 489
+  ClientWidth = 681
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 530
+    Top = 10
+    Width = 10
+    Height = 19
+    Caption = 'T'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 529
+    Top = 37
+    Width = 11
+    Height = 19
+    Caption = 'N'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 600
+    Top = 144
+    Width = 75
+    Height = 25
+    Caption = 'Start'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 600
+    Top = 175
+    Width = 75
+    Height = 25
+    Caption = 'Stop'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+    OnClick = Button2Click
+  end
+  object Edit1: TEdit
+    Left = 554
+    Top = 8
+    Width = 121
+    Height = 21
+    TabOrder = 2
+    Text = '1e4'
+  end
+  object Edit2: TEdit
+    Left = 554
+    Top = 35
+    Width = 121
+    Height = 21
+    TabOrder = 3
+    Text = '30'
+  end
+  object Chart1: TChart
+    Left = 8
+    Top = 8
+    Width = 473
+    Height = 473
+    Legend.Visible = False
+    MarginBottom = 0
+    MarginLeft = 0
+    MarginRight = 0
+    MarginTop = 0
+    Title.Text.Strings = (
+      'TChart')
+    Title.Visible = False
+    AxisVisible = False
+    View3D = False
+    TabOrder = 4
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+    object Series1: TPointSeries
+      ClickableLine = False
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+  end
+end

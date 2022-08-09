@@ -1,0 +1,44 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = #1051#1056'10 '#1052#1086#1076#1077#1083#1100' '#1110#1076#1077#1072#1083#1100#1085#1086#1075#1086' '#1075#1072#1079#1091
+  ClientHeight = 296
+  ClientWidth = 538
+  Color = clSilver
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Button1: TButton
+    Left = 424
+    Top = 16
+    Width = 75
+    Height = 25
+    Caption = 'Start'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 0
+  end
+  object Chart1: TChart
+    Left = 8
+    Top = 8
+    Width = 400
+    Height = 250
+    Legend.Visible = False
+    Title.Text.Strings = (
+      'TChart')
+    Title.Visible = False
+    View3D = False
+    TabOrder = 1
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+  end
+end

@@ -1,0 +1,219 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = #1051#1056'10 '#1052#1086#1076#1077#1083#1100' '#1110#1076#1077#1072#1083#1100#1085#1086#1075#1086' '#1075#1072#1079#1091
+  ClientHeight = 337
+  ClientWidth = 634
+  Color = clSilver
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 476
+    Top = 34
+    Width = 10
+    Height = 19
+    Caption = 'T'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 476
+    Top = 69
+    Width = 14
+    Height = 19
+    Caption = 'm'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label3: TLabel
+    Left = 476
+    Top = 104
+    Width = 11
+    Height = 19
+    Caption = 'N'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label4: TLabel
+    Left = 476
+    Top = 139
+    Width = 8
+    Height = 19
+    Caption = 'L'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label5: TLabel
+    Left = 475
+    Top = 174
+    Width = 18
+    Height = 19
+    Caption = 'tgl'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label6: TLabel
+    Left = 475
+    Top = 209
+    Width = 14
+    Height = 19
+    Caption = 'dt'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label7: TLabel
+    Left = 475
+    Top = 244
+    Width = 8
+    Height = 19
+    Caption = 'k'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 469
+    Top = 280
+    Width = 75
+    Height = 25
+    Caption = 'Start'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object Chart1: TChart
+    Left = 8
+    Top = 8
+    Width = 457
+    Height = 321
+    Legend.Visible = False
+    Title.Text.Strings = (
+      'TChart')
+    Title.Visible = False
+    View3D = False
+    TabOrder = 1
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+    object Series1: TLineSeries
+      Brush.BackColor = clDefault
+      Pointer.HorizSize = 3
+      Pointer.InflateMargins = True
+      Pointer.Style = psCircle
+      Pointer.VertSize = 3
+      Pointer.Visible = True
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+  end
+  object Button2: TButton
+    Left = 550
+    Top = 280
+    Width = 75
+    Height = 25
+    Caption = 'Stop'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 2
+    OnClick = Button2Click
+  end
+  object Edit1: TEdit
+    Left = 505
+    Top = 32
+    Width = 121
+    Height = 21
+    TabOrder = 3
+    Text = '300'
+  end
+  object Edit2: TEdit
+    Left = 505
+    Top = 67
+    Width = 121
+    Height = 21
+    TabOrder = 4
+    Text = '1e-25'
+  end
+  object Edit3: TEdit
+    Left = 505
+    Top = 102
+    Width = 121
+    Height = 21
+    TabOrder = 5
+    Text = '10000'
+  end
+  object Edit4: TEdit
+    Left = 505
+    Top = 137
+    Width = 121
+    Height = 21
+    TabOrder = 6
+    Text = '1e-6'
+  end
+  object Edit5: TEdit
+    Left = 504
+    Top = 172
+    Width = 121
+    Height = 21
+    TabOrder = 7
+    Text = '1e-6'
+  end
+  object Edit6: TEdit
+    Left = 504
+    Top = 207
+    Width = 121
+    Height = 21
+    TabOrder = 8
+    Text = '1e-10'
+  end
+  object Edit7: TEdit
+    Left = 504
+    Top = 242
+    Width = 121
+    Height = 21
+    TabOrder = 9
+    Text = '1,38e-23'
+  end
+end

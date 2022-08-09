@@ -1,0 +1,120 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, VclTee.TeeGDIPlus,
+  VCLTee.TeEngine, VCLTee.Series, Vcl.ExtCtrls, VCLTee.TeeProcs, VCLTee.Chart;
+
+type
+  TForm1 = class(TForm)
+    Button1: TButton;
+    Button2: TButton;
+    Edit1: TEdit;
+    Label1: TLabel;
+    Edit2: TEdit;
+    Label2: TLabel;
+    Chart1: TChart;
+    Series1: TPointSeries;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  flag: Boolean;
+  n, iv, jv, t, r: Integer;
+  time: Real;
+  a: array [1 .. 100, 1 .. 100] of Integer;
+  di: array [1 .. 4] of Integer = (-1, 0, 1, 0);
+  dj: array [1 .. 4] of Integer = (0, 1, 0, -1);
+
+implementation
+
+{$R *.dfm}
+
+procedure init;
+var
+  i, j: Integer;
+begin
+  for i := 1 to n do
+    for j := 1 to n do
+      begin
+        if i < n div 2 // Random < p
+          then
+            begin
+              a[i, j] := 1;
+              Form1.Series1.AddXY(i, j, '', clWhite); // A
+            end
+          else
+            begin
+              a[i, j] := 2;
+              Form1.Series1.AddXY(i, j, '', clBlack); // B
+            end;
+      end;
+
+  iv := 1;
+  jv := 1;
+  a[iv, jv] := 0;
+  Form1.Series1.AddXY(iv, jv, '', clRed); // Vacancy
+end;
+
+function BC(ind: Integer): Integer;
+begin
+  BC := ind;
+  if ind < 1
+    then BC := ind + n;
+
+  if ind > n
+    then BC := ind - n;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  i, j: Integer;
+begin
+  flag := True;
+
+  Series1.Clear;
+
+  time := StrToFloat(Edit1.Text);
+  n := StrToInt(Edit2.Text);
+
+  init;
+
+  t := 0;
+
+  while flag and (t < time) do
+    begin
+      r := Random(4) + 1;
+
+      i := BC(iv + di[r]);
+      j := BC(jv + dj[r]);
+
+      a[iv, jv] := a[i, j];
+      a[i, j] := 0;
+
+      if a[iv, jv] = 1
+        then Series1.AddXY(iv, jv, '', clWhite)
+        else Series1.AddXY(iv, jv, '', clBlack);
+
+      Series1.AddXY(i, j, '', clRed); // Vacancy
+      Application.ProcessMessages;
+
+      iv := i;
+      jv := j;
+      t := t + 1;
+    end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  flag := False;
+end;
+
+end.
