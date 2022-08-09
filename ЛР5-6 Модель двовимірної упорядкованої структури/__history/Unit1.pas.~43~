@@ -1,0 +1,351 @@
+﻿unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, VclTee.TeEngine,
+  VclTee.Series, Vcl.ExtCtrls, VclTee.TeeProcs, VclTee.Chart, Vcl.StdCtrls,
+  Math, VclTee.BubbleCh;
+
+type
+  TForm1 = class(TForm)
+    Chart1: TChart;
+    Series1: TBubbleSeries;
+    Edit1: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Edit6: TEdit;
+    Edit7: TEdit;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Edit8: TEdit;
+    Edit9: TEdit;
+    Label8: TLabel;
+    Label9: TLabel;
+    Button3: TButton;
+    Edit10: TEdit;
+    Button1: TButton;
+    procedure Button3Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  Vx, Vy, x, y, Fx, Fy: array [1 .. 100, 1 .. 100] of double;
+  color: array [1 .. 100, 1 .. 100] of integer;
+  sl, sr, sb, st, dx, dy, a1, a2, r0: real;
+  count: integer;
+  run: Boolean;
+  di: array [1 .. 8] of integer = (
+    -1,
+    0,
+    1,
+    0,
+    -1,
+    -1,
+    1,
+    1
+  );
+  dj: array [1 .. 8] of integer = (
+    0,
+    -1,
+    0,
+    1,
+    -1,
+    1,
+    1,
+    -1
+  );
+
+implementation
+
+{$R *.dfm}
+
+procedure visual;
+var
+  i, j: integer;
+
+begin
+  Form1.Series1.Clear;
+  for i := 1 to count do
+    for j := 1 to count do
+    begin
+      case color[i, j] of
+        0:
+          Form1.Series1.AddBubble(x[i, j], y[i, j], 0.45 * r0, '', clBtnFace);
+        1:
+          Form1.Series1.AddBubble(x[i, j], y[i, j], 0.45 * r0, '', clred);
+        2:
+          Form1.Series1.AddBubble(x[i, j], y[i, j], 0.45 * r0, '', clgreen);
+      end;
+    end;
+  Application.ProcessMessages
+end;
+
+function BC_x(p: integer): integer;
+begin
+  if p < 1 then
+  begin
+    BC_x := p + count;
+    dx := -a1 * count
+  end
+  else if p > count then
+  begin
+    BC_x := p - count;
+    dx := a1 * count
+  end
+  else
+    dx := 0;
+end;
+
+function BC_y(p: integer): integer;
+begin
+  if p < 1 then
+  begin
+    BC_y := p + count;
+    dy := -a2 * count
+  end
+  else if p > count then
+  begin
+    BC_y := p - count;
+    dy := a2 * count
+  end
+  else
+    dy := 0;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  run := false;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+var
+  dx, dy, dax, day, RSize, m, T, kb, x0, tt, dist, f, S, Sum, norma, d, sigma,
+    E0, E_p, time, dt, aa, r: double;
+  i, j, k, count: integer;
+  count2: real;
+begin
+
+  Randomize;
+  sl := StrToFloat(Edit1.Text);
+  sr := StrToFloat(Edit2.Text);
+  sb := StrToFloat(Edit3.Text);
+  st := StrToFloat(Edit4.Text);
+  RSize := StrToFloat(Edit5.Text);
+  count := StrToInt(Edit6.Text);
+  dt := StrToFloat(Edit7.Text);
+  m := StrToFloat(Edit8.Text);
+  count2 := count / 2;
+
+  { for i := 1 to count do // ініціалізація
+    for j := 1 to count do
+    if i < count2 then
+    color[i, j] := 1
+    else
+    color[i, j] := 2; }
+
+  run := true;
+
+  T := StrToFloat(Edit9.Text);
+  kb := 1.38E-23;
+  aa := 0.053 * 1.6E-19;
+  x0 := 2.886E-10;
+  a1 := (sr - sl) / count;
+  a2 := (st - sb) / count;
+  d := 2;
+  sigma := 119 * kb;
+  r0 := StrToFloat(Edit10.Text);
+  time := 0;
+  // Series2.Clear;
+
+  Chart1.BottomAxis.Minimum := 0; // (sl - r) * 1E8;
+  Chart1.BottomAxis.Maximum := r0 * (count + 1) * 1E8 * 1.1; // (sr + r) * 1E8;
+  Chart1.LeftAxis.Minimum := 0; // (sb - r) * 1E8;
+  Chart1.LeftAxis.Maximum := r0 * (count + 1) * 1E8 * 1.1; // (st + r) * 1E8;
+
+  E0 := (count * d * kb * T);
+
+  tt := 0;
+  for i := 1 to count do // ініціалізація
+    for j := 1 to count do
+    begin
+      x[i, j] := r0 * i * 1.1; // sl + a1 / 2 + (i - 1) * a1;
+      y[i, j] := r0 * j * 1.1; // sb + a2 / 2 + (j - 1) * a2;
+      Vx[i, j] := sqrt(((2 * kb * T) / m) * ln(1 / random)) *
+        sin(2 * pi * random);
+      Vy[i, j] := sqrt(((2 * kb * T) / m) * ln(1 / random)) *
+        sin(2 * pi * random);
+    end;
+
+  Series1.Clear;
+  for i := 1 to count do
+    for j := 1 to count do
+    begin
+      Series1.AddBubble(x[i, j] * 1E8, y[i, j] * 1E8, RSize * 1E8, '', clred);
+    end;
+
+  while (run) do
+  begin
+    for i := 1 to count do
+      for j := 1 to count do
+      begin
+        Fx[i, j] := 0;
+        Fy[i, j] := 0;
+      end;
+
+    // E_p := 0;
+
+    for i := 1 to count do
+      for j := 1 to count do
+        for k := 1 to 8 do
+        begin
+          r := sqrt(sqr(x[i, j] - (x[BC_x(i + di[k]), BC_y(j + dj[k])] + dx)) +
+            sqr(y[i, j] - (y[BC_x(i + di[k]), BC_y(j + dj[k])] + dy)));
+
+          f := 24 * sigma / r *
+            (2 * exp(12 * ln(r0 / r)) - exp(6 * ln(r0 / r)));
+
+          // E_p := E_p + 4 * sigma * (exp(12 * ln(r0 / r)) - exp(6 * ln(r0 / r)));
+
+          Fx[i, j] := Fx[i, j] + f / r *
+            (x[i, j] - (x[BC_x(i + di[k]), BC_y(j + dj[k])] + dx));
+          Fy[i, j] := Fy[i, j] + f / r *
+            (y[i, j] - (y[BC_x(i + di[k]), BC_y(j + dj[k])] + dy));
+        end;
+
+    for i := 1 to count do
+      for j := 1 to count do
+      begin
+        Vx[i, j] := Vx[i, j] + Fx[i, j] / m * dt;
+        Vy[i, j] := Vy[i, j] + Fy[i, j] / m * dt;
+
+        x[i, j] := x[i, j] + Vx[i, j] * dt;
+        y[i, j] := y[i, j] + Vy[i, j] * dt;
+      end;
+
+    Series1.Clear;
+    for i := 1 to count do
+      for j := 1 to count do
+      begin
+        Series1.AddBubble(x[i, j] * 1E8, y[i, j] * 1E8, RSize * 1E8, '', clred);
+      end;
+
+    S := 0;
+    for i := 1 to count do
+      for j := 1 to count do
+      begin
+        S := S + m * (Vx[i, j] * Vx[i, j] + Vy[i, j] * Vy[i, j]);
+      end;
+
+    // norma := sqrt(E0 / S);
+
+    { for i := 1 to count do
+      for j := 1 to count do
+      begin
+      Vx[i, j] := Vx[i, j] * norma;
+      Vy[i, j] := Vy[i, j] * norma;
+      end; }
+
+    // if round(t / dt) mod 1000 = 0
+    // then Series2.AddXY(round(t / dt), S / E0);
+
+    Application.ProcessMessages;
+    time := time + dt;
+
+    // Series2.Clear;
+
+  end;
+
+  { E0 := (count * d * kb * T);
+
+
+    while (run) do
+    begin
+
+    for i := 1 to count do
+    for j := 1 to count do
+    begin
+    Fx[i,j] := 0;
+    Fy[i,j] := 0;
+    end;
+
+    E_p := 0;
+
+    for i := 1 to count do
+    for j := 1 to count do
+    for k := 1 to 4 do
+    begin
+    r := sqrt(sqr(x[i, j] - (x[BC_x(i + di[k]), BC_y(j + dj[k])]+dx)) +
+    sqr(y[i, j] - (y[BC_x(i + di[k]), BC_y(j + dj[k])]+dy)));
+    f := 24 * sigma / r * (2 * exp(12 * ln(r0 / r)) - exp(6 * ln(r0 / r)));
+    E_p := E_p + 4 * sigma *
+    (exp(12 * ln(r0 / r)) - exp(6 * ln(r0 / r)));
+
+    Fx[i, j] := Fx[i, j] + f / r *
+    (x[i, j] - (x[BC_x(i + di[k]), BC_y(j + dj[k])]+dx));
+    Fy[i, j] := Fy[i, j] + f / r *
+    (y[i, j] - (y[BC_x(i + di[k]), BC_y(j + dj[k])]+dy));
+    end;
+    for i := 1 to count do
+    for j := 1 to count do
+    begin
+    Vx[i,j] := Vx[i,j] + Fx[i,j] / m * dt;
+    Vy[i,j] := Vy[i,j] + Fy[i,j] / m * dt;
+
+    x[i,j] := x[i,j] + Vx[i,j] * dt
+    y[i,j] := y[i,j] + Vy[i,j] * dt;
+    end;
+
+    S := 0;
+    for i := 1 to count do
+    for j := 1 to count do
+    begin
+    S := S + m*(Vx[i,j] * Vx[i,j] + Vy[i,j] * Vy[i,j]);
+    end;
+
+    //  norma := sqrt(2 * (E0-E_p) / (S));
+    { norma:=1;
+    for i := 1 to count do
+    for j := 1 to count do
+    begin
+    Vx[i,j] := Vx[i,j] * norma;
+    Vy[i,j] := Vy[i,j] * norma;
+    end;
+
+    Series1.Clear;
+    for i := 1 to count do
+    for j := 1 to count do
+    begin
+    Series1.AddBubble(x[i,j] * 1E8, y[i,j] * 1E8, RSize * 1E8);
+    end;
+
+    Series2.AddXY(time * 1E9,(E0/(s+E_p))*1E20 );
+
+    Application.ProcessMessages;
+    time := time + dt;
+    end;
+    Series2.Clear; }
+
+end;
+
+procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+run:=false;
+end;
+
+end.

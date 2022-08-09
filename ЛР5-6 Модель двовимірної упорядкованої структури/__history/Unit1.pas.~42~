@@ -1,0 +1,197 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, VclTee.TeEngine,
+  VclTee.Series, Vcl.ExtCtrls, VclTee.TeeProcs, VclTee.Chart, Vcl.StdCtrls,
+  VclTee.BubbleCh;
+
+type
+  TForm1 = class(TForm)
+    Button1: TButton;
+    Chart1: TChart;
+    Button2: TButton;
+    Series1: TBubbleSeries;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  flag: Boolean;
+  a, r0, k, f_max, sigma, dx, dy, p_ene_old, p_ene, dt: Real;
+  n, i, j: Integer;
+  x, y, Fx, Fy: array [1 .. 10, 1 .. 10] of Real;
+  c: array [1 .. 10, 1 .. 10] of Integer;
+  neig: array [0 .. 2, 1 .. 6] of Integer = ((-1, 0, -1, 1, -1, 0),
+    (1, 0, -1, 1, 1, 0), (-1, -1, 0, 0, 1, 1));
+
+implementation
+
+{$R *.dfm}
+
+// періодичні граничні умови Борна Кармана;
+procedure bk(var ia, ja: Integer);
+begin
+  dx := 0;
+  dy := 0;
+
+  if ia < 1 then
+  begin
+    ia := n + ia;
+    dx := -n * a
+  end;
+
+  if ia > n then
+  begin
+    ia := ia - n;
+    dx := n * a
+  end;
+
+  if ja < 1 then
+  begin
+    ja := n + ja;
+    dy := -n * a * sqrt(3) / 2
+  end;
+
+  if ja > n then
+  begin
+    ja := ja - n;
+    dy := n * a * sqrt(3) / 2
+  end;
+end;
+
+// підпрограми перебору сусідів заданого атома в межах першої координаційної сфери;
+procedure atom_neighbours(ian, jan: Integer);
+var
+  temp: longint;
+  r: double;
+
+  // функція для визначення потенціальної енергії парної взаємодії;
+  function p(r: double; col1, col2: Integer): double;
+  begin
+    if col1 * col2 <> 0 then
+      p := 4 * sigma * (exp(12 * ln(r0 / r)) - exp(6 * ln(r0 / r)))
+    else
+      p := 0
+  end;
+
+  // функція для визначення сили енергії парної взаємодії;
+  function F(r: double; col1, col2: Integer): double;
+  begin
+    if (col1 * col2) <> 0 then
+      F := 24 * sigma / r * (2 * exp(12 * ln(r0 / r)) - exp(6 * ln(r0 / r)))
+    else
+      F := 0
+  end; // Сатон-Чена
+
+  // визначення проекцій сили;
+  procedure an(iss, jss: Integer);
+  var
+    ff: double;
+  begin
+    bk(iss, jss);
+    r := sqrt(sqr(x[ian, jan] - (x[iss, jss] + dx)) + sqr(y[ian, jan] - (y[iss, jss] + dy)));
+
+    ff := F(r, c[ian, jan], c[iss, jss]);
+
+    Fx[ian, jan] := Fx[ian, jan] + ff * (x[ian, jan] - (x[iss, jss] + dx)) / r;
+
+    Fy[ian, jan] := Fy[ian, jan] + ff * (y[ian, jan] - (y[iss, jss] + dy)) / r;
+    p_ene := p_ene + p(r, c[ian, jan], c[iss, jss]);
+  end;
+
+begin
+  for i := 1 to 6 do
+    an(ian + neig[jan mod 2, i], jan + neig[2, i])
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  flag := False;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  Randomize;
+  flag := True;
+  Series1.Clear;
+
+  a := 1E-9;
+  n := 10;
+  k := 1.38E-23;
+  r0 := 3.4E-10;
+  sigma := 119 * k;
+  p_ene_old := 0;
+  p_ene := -1e-17;
+
+  // ініціалізація початкових умов;
+  // розміщення атомів в рівноважних вузлах
+  Chart1.LeftAxis.SetMinMax(0, (n + 1) * a * sqrt(3) / 2);
+  Chart1.BottomAxis.SetMinMax(0, (n + 1) * a + a / 2);
+
+  for i := 1 to n do
+    for j := 1 to n do
+    begin
+      x[i, j] := a * i + (j mod 2) * a / 2;
+      y[i, j] := a * j * sqrt(3) / 2;
+      c[i, j] := 1;
+      // if (i >= 5) and (i <= 7) then color[i,j] := 0
+    end;
+
+  c[5, 6] := 0;
+
+  for i := 1 to 6 do
+    c[5 + neig[6 mod 2, i], 6 + neig[2, i]] := 0;
+
+  // візуалізація;
+  for i := 1 to n do
+    for j := 1 to n do
+    begin
+      case c[i, j] of
+        0:  Series1.AddBubble(x[i, j], y[i, j], 0.45 * r0, '', clBtnFace);
+        1:  Series1.AddBubble(x[i, j], y[i, j], 0.45 * r0, '', clred);
+        2:  Series1.AddBubble(x[i, j], y[i, j], 0.45 * r0, '', clgreen);
+      end;
+
+      Application.ProcessMessages;
+    end;
+
+  // визначення кроку по часу dt (через пошук максимальної проекції сили після ініціалізації);
+  f_max := 0;
+
+  for i := 1 to n do
+    for j := 1 to n do
+      if c[i, j] <> 0 then
+      begin
+        Fx[i, j] := 0;
+        Fy[i, j] := 0;
+      end;
+
+  for i := 1 to n do
+    for j := 1 to n do
+      if c[i, j] <> 0 then
+        atom_neighbours(i, j);
+
+  for i := 1 to n do
+    for j := 1 to n do
+      if c[i, j] <> 0 then
+        begin
+          if f_max < abs(Fx[i, j]) then
+            f_max := abs(Fx[i, j]);
+          if f_max < abs(Fy[i, j]) then
+            f_max := abs(Fy[i, j]);
+        end;
+
+  dt := f_max
+
+end;
+
+end.
