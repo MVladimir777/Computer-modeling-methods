@@ -1,0 +1,127 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, Vcl.StdCtrls,
+  VCLTee.TeEngine, VCLTee.Series, Vcl.ExtCtrls, VCLTee.TeeProcs, VCLTee.Chart,
+  VCLTee.BubbleCh;
+
+const
+  g = 9.8;
+
+type
+  TForm1 = class(TForm)
+    Button1: TButton;
+    Label1: TLabel;
+    Edit1: TEdit;
+    Label2: TLabel;
+    Edit2: TEdit;
+    Label3: TLabel;
+    Edit3: TEdit;
+    Label4: TLabel;
+    Edit4: TEdit;
+    Label5: TLabel;
+    Edit5: TEdit;
+    Label6: TLabel;
+    Edit6: TEdit;
+    Chart1: TChart;
+    Series1: TLineSeries;
+    Series2: TBubbleSeries;
+    Chart2: TChart;
+    Button2: TButton;
+    Series4: TLineSeries;
+    Series3: TPointSeries;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  m, v0, angle, k, h, dt, ang, vx, vy, x, y, t, v: Real;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  series1.Clear;
+
+  m := strtofloat(edit1.Text);
+  v0 := strtofloat(edit2.Text);
+  angle := strtofloat(edit3.Text);
+  k := strtofloat(edit4.Text);
+  h := strtofloat(edit5.Text);
+  dt := strtofloat(edit6.Text);
+
+  ang := pi * angle / 180;
+  vx := v0 * cos(ang);
+  vy := v0 * sin(ang);
+  x := 0;
+  y := h;
+  t := 0;
+
+  while y >= 0 do
+    begin
+      series1.AddXY(x, y);
+      series2.Clear;
+      series2.AddBubble(x, y, 0.1, ' ', clRed);
+
+      x := x + vx * dt;
+      y := y + vy * dt;
+      v := sqrt(sqr(vx) + sqr(vy));
+      vx := vx + (-k / m * v * vx) * dt;
+      vy := vy + (-g - k / m * v * vy) * dt;
+      t := t + dt;
+
+      Application.ProcessMessages;
+    end;
+
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+var
+  dang, h1, h2, h3: Real;
+begin
+  series3.Clear;
+  series4.Clear;
+
+  ang := 0;
+  dang := 0.01;
+  v0 := 30;
+  dt := 0.01;
+
+  while ang <= (pi/2) do
+    begin
+      ang := ang + dang;
+      h := sqr(v0)*sqr(sin(ang))/(2*g);
+
+      h1 := 0;
+      vy := v0 * sin(ang);
+
+      h2 := h1 + vy * dt;
+      vy := vy - g * dt;
+
+      h3 := h2 + vy * dt;
+
+      while (h1-h2)*(h2-h3) > 0 do
+        begin
+          h1 := h2;
+          h2 := h3;
+          vy := vy - g * dt;
+          h3 := h3 + vy * dt;
+        end;
+
+      series3.AddXY(ang, h2);
+      series4.AddXY(ang, h);
+      Application.ProcessMessages;
+    end;
+end;
+
+end.

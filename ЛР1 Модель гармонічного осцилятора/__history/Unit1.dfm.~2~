@@ -1,0 +1,111 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = #1051#1056'1 '#1052#1086#1076#1077#1083#1100' '#1075#1072#1088#1084#1086#1085#1110#1095#1085#1086#1075#1086' '#1086#1089#1094#1080#1083#1103#1090#1086#1088#1072
+  ClientHeight = 471
+  ClientWidth = 905
+  Color = clSilver
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Chart1: TChart
+    Left = 8
+    Top = 8
+    Width = 145
+    Height = 456
+    MarginTop = 0
+    Title.Text.Strings = (
+      'TChart')
+    Title.Visible = False
+    View3D = False
+    TabOrder = 0
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+  end
+  object Chart2: TChart
+    Left = 159
+    Top = 8
+    Width = 450
+    Height = 225
+    Title.Text.Strings = (
+      'TChart')
+    Title.Visible = False
+    View3D = False
+    TabOrder = 1
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+  end
+  object Chart3: TChart
+    Left = 159
+    Top = 239
+    Width = 450
+    Height = 225
+    Title.Text.Strings = (
+      'TChart')
+    Title.Visible = False
+    View3D = False
+    TabOrder = 2
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+  end
+  object Chart4: TChart
+    Left = 615
+    Top = 8
+    Width = 282
+    Height = 225
+    Title.Text.Strings = (
+      'TChart')
+    Title.Visible = False
+    View3D = False
+    TabOrder = 3
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+  end
+  object Button1: TButton
+    Left = 615
+    Top = 439
+    Width = 90
+    Height = 25
+    Caption = 'Start'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 4
+  end
+  object Button2: TButton
+    Left = 711
+    Top = 438
+    Width = 91
+    Height = 25
+    Caption = 'Pause'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 5
+  end
+  object Button3: TButton
+    Left = 808
+    Top = 438
+    Width = 89
+    Height = 25
+    Caption = 'Stop'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 6
+  end
+end

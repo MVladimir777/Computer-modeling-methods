@@ -1,0 +1,140 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, VCLTee.TeEngine,
+  Vcl.ExtCtrls, VCLTee.TeeProcs, VCLTee.Chart, Vcl.StdCtrls, VCLTee.Series,
+  VCLTee.BubbleCh;
+
+type
+  TForm1 = class(TForm)
+    Chart1: TChart;
+    Chart2: TChart;
+    Chart3: TChart;
+    Chart4: TChart;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Series1: TBubbleSeries;
+    Series2: TLineSeries;
+    Series3: TLineSeries;
+    Series5: TLineSeries;
+    LabeledEdit1: TLabeledEdit;
+    LabeledEdit2: TLabeledEdit;
+    LabeledEdit3: TLabeledEdit;
+    LabeledEdit4: TLabeledEdit;
+    LabeledEdit5: TLabeledEdit;
+    LabeledEdit6: TLabeledEdit;
+    LabeledEdit7: TLabeledEdit;
+    Series4: TLineSeries;
+    Series6: TLineSeries;
+    Series7: TLineSeries;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  flag: Boolean;
+  m, k, xeq, x, v, tgl, dt, ox, t, a, uk, up: Real;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  flag := True;
+
+  series1.Clear;
+  series2.Clear;
+  series3.Clear;
+  series4.Clear;
+  series5.Clear;
+  series6.Clear;
+  series7.Clear;
+
+  m := StrToFloat(LabeledEdit1.Text);
+  k := StrToFloat(LabeledEdit2.Text);
+  xeq := StrToFloat(LabeledEdit3.Text);
+  x := StrToFloat(LabeledEdit4.Text);
+  v := StrToFloat(LabeledEdit5.Text);
+  tgl := StrToFloat(LabeledEdit6.Text);
+  dt := StrToFloat(LabeledEdit7.Text);
+
+  ox := Sqrt(Sqr(x - xeq) + m / k * sqr(v));
+  chart1.LeftAxis.SetMinMax(xeq - ox - ox / 5, xeq + ox + ox / 5);
+
+  uk := m * sqr(v) / 2;
+  up := k * sqr(x - xeq) / 2;
+
+  t := 0;
+  series1.AddBubble(t, x, ox/10, ' ', clBlue);
+  series2.AddXY(t, x);
+  series3.AddXY(t, v);
+  series4.AddXY(v, x);
+  series5.AddXY(t, uk);
+  series6.AddXY(t, up);
+  series7.AddXY(t, uk + up);
+
+  while (t < tgl) and flag do
+    begin
+      x := x + v * dt;
+      a := (-k * (x - xeq)) / m;
+      v := v + a * dt;
+      uk := m * sqr(v) / 2;
+      up := k * sqr(x - xeq) / 2;
+      t := t + dt;
+
+      series1.Clear;
+      series1.AddBubble(t, x, ox/10, ' ', clBlue);
+      series2.AddXY(t, x);
+      series3.AddXY(t, v);
+      series4.AddXY(v, x);
+      series5.AddXY(t, uk);
+      series6.AddXY(t, up);
+      series7.AddXY(t, uk + up);
+
+      Application.ProcessMessages;
+    end;
+
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  flag := False;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+begin
+  flag := True;
+  while (t < tgl) and flag do
+    begin
+      x := x + v * dt;
+      a := (-k * (x - xeq)) / m;
+      v := v + a * dt;
+      uk := m * sqr(v) / 2;
+      up := k * sqr(x - xeq) / 2;
+      t := t + dt;
+
+      series1.Clear;
+      series1.AddBubble(0, x, ox/10, ' ', clBlue);
+      series2.AddXY(t, x);
+      series3.AddXY(t, v);
+      series4.AddXY(v, x);
+      series5.AddXY(t, uk);
+      series6.AddXY(t, up);
+      series7.AddXY(t, uk + up);
+
+      Application.ProcessMessages;
+    end;
+end;
+
+end.

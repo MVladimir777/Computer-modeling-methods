@@ -1,0 +1,344 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, Vcl.StdCtrls,
+  VCLTee.TeEngine, VCLTee.Series, VCLTee.BubbleCh, Vcl.ExtCtrls,
+  VCLTee.TeeProcs, VCLTee.Chart;
+
+type
+  TForm1 = class(TForm)
+    Button1: TButton;
+    Label1: TLabel;
+    Edit1: TEdit;
+    Label2: TLabel;
+    Edit2: TEdit;
+    Label3: TLabel;
+    Edit3: TEdit;
+    Label4: TLabel;
+    Edit4: TEdit;
+    Label5: TLabel;
+    Edit5: TEdit;
+    Label6: TLabel;
+    Edit6: TEdit;
+    Label7: TLabel;
+    Edit7: TEdit;
+    Button2: TButton;
+    Chart2: TChart;
+    Chart3: TChart;
+    Button3: TButton;
+    Chart1: TChart;
+    Series2: TLineSeries;
+    Series1: TBubbleSeries;
+    Chart4: TChart;
+    Button4: TButton;
+    Edit8: TEdit;
+    Label8: TLabel;
+    Series3: TLineSeries;
+    Series4: TLineSeries;
+    Series5: TLineSeries;
+    Series6: TLineSeries;
+    Series7: TLineSeries;
+    Series8: TLineSeries;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  flag: Boolean;
+  m, k, kg, l, dx, dt, tgl, t, u, up1, uk1: Real;
+  x, v, F, uk, up: array [1..100] of Real;
+
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  i,n: Integer;
+begin
+  flag := True;
+
+  m := StrToFloat(Edit1.Text);
+  k := StrToFloat(Edit2.Text);
+  kg := StrToFloat(Edit3.Text);
+  l := StrToFloat(Edit4.Text);
+  dx := StrToFloat(Edit5.Text);
+  dt := StrToFloat(Edit6.Text);
+  tgl := StrToFloat(Edit7.Text);
+  n := strtoint(Edit8.Text);
+
+  series1.Clear;
+  series2.Clear;
+  series3.Clear;
+  series4.Clear;
+  series5.Clear;
+  series6.Clear;
+  series7.Clear;
+  series8.Clear;
+
+  chart1.LeftAxis.SetMinMax(-l / 20, l / 20);
+  chart1.BottomAxis.SetMinMax(0, l * (n+1));
+
+  x[1] := l + dx;
+  v[1] := 0;
+  t := 0;
+
+  for i := 2 to n do
+    begin
+      x[i] := i * l;
+      v[i] := 0;
+    end;
+
+  while (t < tgl) and flag do
+    begin
+      F[1] := kg * (l - x[1]) - k * (l - x[2] + x[1]);
+      F[n] := k * (l - x[n] + x[n-1]) - kg * (x[n] - n * l);
+
+      uk[1] := m * sqr(v[1]) / 2;
+      uk[n] := m * sqr(v[n]) / 2;
+
+      up[1] := kg * sqr(l - x[1]) / 2;
+      up[n+1] := kg * sqr(l - ((n+1) * l - x[n])) / 2;
+
+      for i := 2 to n-1 do
+        begin
+          F[i] := -k * (2 * x[i] - x[i+1] - x[i-1]);
+          uk[i] := m * sqr(v[i]) / 2;
+          up[i] := k * sqr(l - (x[i]-x[i-1])) / 2;
+        end;
+
+      up[n] := k * sqr(l - (x[n]-x[n-1])) / 2;
+
+      for i := 1 to n do
+        begin
+          v[i] := v[i] + (F[i] / m) * dt;
+          x[i] := x[i] + v[i] * dt;
+        end;
+
+      t := t + dt;
+
+      u := 0;
+      up1 := 0;
+      uk1 := 0;
+
+      series1.Clear;
+      series2.Clear;
+
+        series2.AddXY(0, 0);
+        series2.AddXY(0 + x[1] * 0.3, 0);
+        series2.AddXY(0 + x[1] * 0.4, 0.02);
+        series2.AddXY(0 + x[1] * 0.5, -0.02);
+        series2.AddXY(0 + x[1] * 0.6, 0.02);
+        series2.AddXY(0 + x[1] * 0.7, 0);
+        series2.AddXY(x[1], 0);
+        series2.AddXY(x[n], 0);
+        series2.AddXY(x[n] + l * 0.3, 0);
+        series2.AddXY(x[n] + l * 0.4, 0.02);
+        series2.AddXY(x[n] + l * 0.5, -0.02);
+        series2.AddXY(x[n] + l * 0.6, 0.02);
+        series2.AddXY(x[n] + l * 0.7, 0);
+        series2.AddXY(l*(n+1), 0);
+
+      for i := 1 to n do
+        begin
+          series1.AddBubble(x[i], 0, l * 0.02);
+
+          if i < n then
+          begin
+            series2.AddXY(x[i], 0);
+            series2.AddXY(x[i] + (x[i + 1] - x[i]) * 0.3, 0);
+            series2.AddXY(x[i] + (x[i + 1] - x[i]) * 0.4, 0.02);
+            series2.AddXY(x[i] + (x[i + 1] - x[i]) * 0.5, -0.02);
+            series2.AddXY(x[i] + (x[i + 1] - x[i]) * 0.6, 0.02);
+            series2.AddXY(x[i] + (x[i + 1] - x[i]) * 0.7, 0);
+            series2.AddXY(x[i + 1], 0);
+          end;
+
+          up1 := up1 + up[i];
+          uk1 := uk1 + uk[i];
+        end;
+
+      up1 := up1 + up[n+1];
+      u := u + uk1 + up1;
+      series3.AddXY(t, uk1);
+      series4.AddXY(t, up1);
+      series5.AddXY(t, u);
+      series6.AddXY(t, x[1]);
+
+      Application.ProcessMessages;
+    end;
+
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  flag := False;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+var
+  i, n: Integer;
+begin
+  flag := True;
+
+  m := StrToFloat(Edit1.Text);
+  k := StrToFloat(Edit2.Text);
+  kg := StrToFloat(Edit3.Text);
+  l := StrToFloat(Edit4.Text);
+  dx := StrToFloat(Edit5.Text);
+  dt := StrToFloat(Edit6.Text);
+  tgl := StrToFloat(Edit7.Text);
+  n := strtoint(Edit8.Text);
+
+  series1.Clear;
+  series2.Clear;
+  series3.Clear;
+  series4.Clear;
+  series5.Clear;
+  series6.Clear;
+  series7.Clear;
+  series8.Clear;
+
+  chart1.LeftAxis.SetMinMax(-l / 20, l / 20);
+  chart1.BottomAxis.SetMinMax(0, l * (n+1));
+
+  x[1] := l;
+  v[1] := 5;
+  t := 0;
+
+  for i := 2 to n do
+    begin
+      x[i] := i * l;
+      v[i] := 0;
+    end;
+
+  while ((x[n] - x[n-1]) > (0.95 * l)) and flag do
+    begin
+      for i := 2 to n-1 do
+        begin
+          F[i] := -k * (2 * x[i] - x[i+1] - x[i-1]);
+        end;
+
+      x[1] := x[1] + v[1] * dt;
+
+      for i := 2 to n-1 do
+        begin
+          v[i] := v[i] + (F[i] / m) * dt;
+          x[i] := x[i] + v[i] * dt;
+        end;
+
+      t := t + dt;
+
+      series1.Clear;
+      for i := 1 to n do
+        begin
+          series1.AddBubble(x[i], 0, l * 0.02);
+        end;
+
+      Application.ProcessMessages;
+    end;
+
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+var
+  va, vb, dv, s, a, b, c, d, z: Real;
+  i, n, j, n1: Integer;
+  vv, dd: array [1..1000] of Real;
+begin
+  flag := True;
+
+  series1.Clear;
+  series2.Clear;
+  series3.Clear;
+  series4.Clear;
+  series5.Clear;
+  series6.Clear;
+  series7.Clear;
+  series8.Clear;
+
+  m := StrToFloat(Edit1.Text);
+  k := StrToFloat(Edit2.Text);
+  l := StrToFloat(Edit4.Text);
+  dt := StrToFloat(Edit6.Text);
+  n := strtoint(Edit8.Text);
+
+  va := 2;
+  vb := 6;
+  dv := 0.1;
+  vv[1] := va;
+
+  n1 := Trunc((vb - va) / dv);
+
+  for j := 1 to n1 do
+    begin
+      x[1] := l;
+      v[1] := vv[j];
+      t := 0;
+
+      for i := 2 to n do
+        begin
+          x[i] := i * l;
+          v[i] := 0;
+        end;
+
+      while ((x[n] - x[n-1]) > (0.95 * l)) and flag do
+        begin
+          for i := 2 to n-1 do
+            begin
+              F[i] := -k * (2 * x[i] - x[i+1] - x[i-1]);
+            end;
+
+          x[1] := x[1] + v[1] * dt;
+
+          for i := 2 to n-1 do
+            begin
+              v[i] := v[i] + (F[i] / m) * dt;
+              x[i] := x[i] + v[i] * dt;
+            end;
+
+          t := t + dt;
+        end;
+
+      dd[j] := (n-1) * l / t;
+      series7.AddXY(vv[j], dd[j]);
+      vv[j+1] := vv[j] + dv;
+      Application.ProcessMessages;
+    end;
+
+  a := 0;
+  b := 0;
+  c := 0;
+  d := 0;
+
+  for j := 1 to n1 do
+  begin
+    a := a + vv[j];
+    b := b + dd[j];
+    c := c + vv[j] * vv[j];
+    d := d + vv[j] * dd[j];
+  end;
+
+  k := (a * b - n1 * d) / (a * a - n1 * c);
+  z := (b - k * a) / n1;
+
+  for j := 1 to n1 do
+  begin
+    s := z + k * vv[j];
+    series8.AddXY(vv[j], s)
+  end;
+
+end;
+
+end.
