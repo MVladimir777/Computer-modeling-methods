@@ -1,0 +1,91 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, Vcl.StdCtrls,
+  VCLTee.TeEngine, VCLTee.Series, Vcl.ExtCtrls, VCLTee.TeeProcs, VCLTee.Chart;
+
+type
+  TForm1 = class(TForm)
+    Chart1: TChart;
+    Series1: TPointSeries;
+    Button1: TButton;
+    Button2: TButton;
+    Chart2: TChart;
+    Series2: TLineSeries;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  flag: Boolean;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  flag := True;
+
+  Series1.Clear;
+
+  q, m, dE, tau, Emax, tmax
+
+  E := de;
+  n := 0;
+  sx := 0;
+  sy := 0;
+  sxy := 0;
+  sx2 := 0;
+
+  while flag and (E < Emax) do
+    begin
+      s := 0;
+      x := 0;
+      tt := 0;
+      a := g * E / m;
+
+      while flag and (t < tmax) do
+        begin
+          t :=  tau * ln(1  / random);
+          tt := tt + t;
+          v := a + t;
+          x := x + a * t * t / 2;
+          s := s + m * v * v / 2;
+
+          Series1.AddXY(tt, x);
+        end;
+
+      vs := x / tt;
+      r0 := s / tt;
+      e := e + de;
+      n := n + 1;
+      sx := sx + sqr(e);
+      sy := sy + r0;
+      sxy := sxy + sqr(e * r0);
+      sx2 := sx2 + sqr(sqr(e));
+
+      Series2.AddXY(e * e, r0);
+    end;
+
+  a1 := (n * sxy - sx * sy) / (n * sx2 - sx * sx);
+  a2 := q * q * tau / m;
+  //a1 / a2;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  flag := False;
+end;
+
+end.
