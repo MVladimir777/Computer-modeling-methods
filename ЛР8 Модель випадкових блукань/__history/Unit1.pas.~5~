@@ -1,0 +1,99 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, Vcl.StdCtrls,
+  VclTee.TeEngine, VclTee.Series, Vcl.ExtCtrls, VclTee.TeeProcs, VclTee.Chart,
+  VclTee.BubbleCh;
+
+type
+  TForm1 = class(TForm)
+    Chart1: TChart;
+    Chart2: TChart;
+    Label1: TLabel;
+    Edit1: TEdit;
+    Button1: TButton;
+    Series2: TBarSeries;
+    Series1: TPointSeries;
+    Chart3: TChart;
+    Series3: TBarSeries;
+    procedure Button1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  a, b, x, y, n, i: Integer;
+  c, d: array [0 .. 100] of Integer;
+  p, dr, r: Real;
+begin
+  Randomize;
+
+  Series1.Clear;
+  Series2.Clear;
+  Series3.Clear;
+
+  n := StrToInt(Edit1.Text);
+  dr := 1;
+
+  Chart1.LeftAxis.SetMinMax(-n, n);
+  Chart1.BottomAxis.SetMinMax(-n, n);
+
+  for i := 0 to 100 do
+    begin
+      c[i] := 0;
+      d[i] := 0;
+    end;
+
+  for a := 1 to 100 do
+    begin
+      x := 0;
+      y := 0;
+
+      for b := 1 to n do
+        begin
+          case Random(4) of
+            0:  x := x + 1;
+            1:  x := x - 1;
+            2:  y := y + 1;
+            3:  y := y - 1;
+          end;
+
+          Series1.AddXY(x, y, '', clBlue);
+        end;
+
+      r := Sqrt(Sqr(x) + Sqr(y));
+      i := round(r / dr) + 1;
+      c[i] := c[i] + 1;
+
+      Series1.AddXY(0, 0, '', clBlack);
+      Series1.AddXY(x, y, '', clRed);
+      Application.ProcessMessages;
+    end;
+
+  for i := 1 to n do
+    begin
+      p := c[i] / (pi * sqr(dr) * (2 * i - 1));
+      Series3.AddXY(i, p);
+    end;
+
+  for i := 1 to n do
+    begin
+      Series2.AddXY(i, c[i]);
+    end;
+end;
+
+end.

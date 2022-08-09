@@ -1,0 +1,169 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, VclTee.TeEngine,
+  VclTee.Series, VclTee.ArrowCha, Vcl.StdCtrls, Vcl.ExtCtrls, VclTee.TeeProcs,
+  VclTee.Chart;
+
+type
+  TForm1 = class(TForm)
+    Button1: TButton;
+    Button2: TButton;
+    Chart1: TChart;
+    Series1: TArrowSeries;
+    Label1: TLabel;
+    Edit1: TEdit;
+    Label2: TLabel;
+    Edit2: TEdit;
+    Label3: TLabel;
+    Edit3: TEdit;
+    ComboBox1: TComboBox;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+const
+  kb = 1.38E-23;
+  m = 1E-25;
+  dt = 1E-14;
+  um = 1E-21;
+  a = 1E-10;
+  Ii = m * a * a / 4;
+  Tt = 50;
+
+var
+  Form1: TForm1;
+  flag: Boolean;
+  n, i, j: integer;
+  l, k, x0, y0, x1, y1, ei, ej: Real;
+  qp, w: array [1 .. 100, 1..100] of Real;
+
+  y, x, f: array [1 .. 100, 1..100] of Double;
+  rr: Double;
+  T, ep, ek, E_etalon, d, gam, temp: Double;
+
+implementation
+
+{$R *.dfm}
+
+function bk(l: integer): integer;
+begin
+  if l < 1
+    then l := l + n;
+
+  if l > n
+    then l := l - n;
+
+  bk := l;
+end;
+
+function u_fi(fi1, fi2: Double): Double;
+begin
+  u_fi := um * sqr(sin(k * (fi1 - fi2)));
+end;
+
+function f_fi(fi1, fi2: Double): Double;
+begin
+  f_fi := -um * k * sin(2 * k * (fi1 - fi2));
+end;
+
+procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  flag := False;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  flag := False;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  Randomize;
+
+  flag := True;
+
+  Series1.Clear;
+
+  n := StrToInt(Edit1.Text);
+  l := StrToFloat(Edit2.Text);
+  k := StrToFloat(ComboBox1.Text);
+
+  Chart1.LeftAxis.SetMinMax(0, n * l + l);
+  Chart1.BottomAxis.SetMinMax(0, n * l + l);
+
+  for i := 1 to n do
+    for j := 1 to n do
+      begin
+        qp[i, j] := 2 * pi * random;
+        w[i, j] := 0;
+
+        x0 := l * i - l/2 * cos(qp[i, j]);
+        y0 := l * j - l/2 * sin(qp[i, j]);
+        x1 := l * i + l/2 * cos(qp[i, j]);
+        y1 := l * j + l/2 * sin(qp[i, j]);
+
+        Series1.AddArrow(x0, y0, x1, y1);
+      end;
+
+
+  //T := 0;
+  gam := 1E13;
+  //E_etalon := (d * n * kb * T) / 2;
+
+  while flag do
+    begin
+      //ep := 0;
+      //ek := 0;
+
+      for i := 1 to n do
+        for j := 1 to n do
+          begin
+            //temp := f_fi(qp[i, j], qp[bk(i - 1), j]) + f_fi(qp[i, j], qp[bk(i + 1), j]);
+            // -(((um * k * (sin(k * 2 * (s[i]-s[i - 1])) + sin(k * 2 *(s[i]- s[i + 1])))) +
+
+            ei := (f_fi(qp[i, j], qp[bk(i - 1), j]) + f_fi(qp[i, j], qp[bk(i + 1), j]) - (gam * Ii * w[i, j])) / Ii;
+            ej := (f_fi(qp[i, j], qp[i, bk(j - 1)]) + f_fi(qp[i, j], qp[i, bk(j - 1)]) - (gam * Ii * w[i, j])) / Ii;
+
+            w[i, j] := w[i, j] + (ei + ej) * dt;
+            qp[i, j] := qp[i, j] + w[i, j] * dt;
+
+            //ek := ek + Ii * sqr(w[i, j]) / 2;
+
+          end;
+
+
+    {for i := 1 to n do
+      for j := 1 to n do
+        begin
+          ep := ep + u_fi(qp[i, j], qp[bk(i - 1), j]) + u_fi(qp[i, j], qp[bk(i + 1), j]);
+        end;
+    T := T + dt; }
+
+    Series1.Clear;
+    for i := 1 to n do
+      for j := 1 to n do
+        begin
+          x0 := l * i - l/2 * cos(qp[i, j]);
+          y0 := l * j - l/2 * sin(qp[i, j]);
+          x1 := l * i + l/2 * cos(qp[i, j]);
+          y1 := l * j + l/2 * sin(qp[i, j]);
+
+          Series1.AddArrow(x0, y0, x1, y1);
+        end;
+
+    Application.ProcessMessages;
+  end;
+
+end;
+
+end.
